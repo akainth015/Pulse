@@ -1,5 +1,5 @@
 let canDrawProfile = false;
-
+const alpha = 0.99;
 const profile = new Image();
 profile.onload = () => canDrawProfile = true;
 profile.src = "https://akainth015.ga/images/text.2018.v5.png";
@@ -28,7 +28,7 @@ navigator.mediaDevices.getUserMedia({audio: true}).then(mediaStream => {
 
         analyser.getByteFrequencyData(frequencyData);
 
-        smoothVolume = smoothVolume * 0.8 + Math.max(...frequencyData) * 0.2;
+        smoothVolume = smoothVolume * alpha + Math.max(...frequencyData) * (1 - alpha);
 
         canvasContext.fillStyle = "black";
         particles.forEach((particle, index) => {
@@ -55,19 +55,19 @@ navigator.mediaDevices.getUserMedia({audio: true}).then(mediaStream => {
             canvasContext.fillRect(width / 2 + radius + 32 + i, height / 2, 1, -frequencyData[i]);
         }
 
-        // canvasContext.fillStyle = "white";
-        // canvasContext.beginPath();
-        // canvasContext.arc(width / 2, height / 2, radius, 0, Math.PI * 2);
-        // canvasContext.fill();
-        // canvasContext.closePath();
+        canvasContext.fillStyle = "white";
+        canvasContext.beginPath();
+        canvasContext.arc(width / 2, height / 2, radius, 0, Math.PI * 2);
+        canvasContext.fill();
+        canvasContext.closePath();
 
         for (let intensity = 0; intensity < 255; intensity++) {
             canvasContext.fillStyle = `rgb(${intensity}, ${intensity}, ${intensity})`;
             canvasContext.beginPath();
             const intensityRadians = intensity * Math.PI / 180;
             canvasContext.arc(
-                Math.cos(frameCount * smoothVolume / 20 - intensityRadians) * radius + width / 2,
-                Math.sin(frameCount * 4 - intensityRadians) * radius + height / 2,
+                Math.cos((frameCount / 25) * smoothVolume / 20 - intensityRadians) * radius + width / 2,
+                Math.sin((frameCount / 25) * smoothVolume / 40 - intensityRadians) * radius + height / 2,
                 2, 0, Math.PI * 2);
             canvasContext.fill();
             canvasContext.closePath();
@@ -77,7 +77,7 @@ navigator.mediaDevices.getUserMedia({audio: true}).then(mediaStream => {
             particles.push({
                 emissionFrame: frameCount,
                 heading: Math.random() * Math.PI * 2,
-                speed: smoothVolume / 5
+                speed: Math.max(10, smoothVolume / 5)
             });
         }
 
