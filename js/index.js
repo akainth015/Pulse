@@ -55,9 +55,10 @@ navigator.mediaDevices.getUserMedia({audio: true}).then(mediaStream => {
             canvasContext.fillRect(width / 2 + radius + 32 + i, height / 2, 1, -frequencyData[i]);
         }
 
-        canvasContext.fillStyle = "white";
+        canvasContext.fillStyle = "rgba(255, 255, 255, 0.8)";
         canvasContext.beginPath();
-        canvasContext.arc(width / 2, height / 2, radius, 0, Math.PI * 2);
+        const TAO = Math.PI * 2;
+        canvasContext.arc(width / 2, height / 2, radius, 0, TAO);
         canvasContext.fill();
         canvasContext.closePath();
 
@@ -66,9 +67,9 @@ navigator.mediaDevices.getUserMedia({audio: true}).then(mediaStream => {
             canvasContext.beginPath();
             const intensityRadians = intensity * Math.PI / 180;
             canvasContext.arc(
-                Math.cos((frameCount / 25) * smoothVolume / 20 - intensityRadians) * radius + width / 2,
-                Math.sin((frameCount / 25) * smoothVolume / 40 - intensityRadians) * radius + height / 2,
-                2, 0, Math.PI * 2);
+                Math.cos(frameCount % TAO + smoothVolume / 10 - intensityRadians) * radius * 0.6 + width / 2,
+                Math.sin(frameCount % TAO + smoothVolume / 10 - intensityRadians) * radius * 0.6 + height / 2,
+                2, 0, TAO);
             canvasContext.fill();
             canvasContext.closePath();
         }
@@ -77,7 +78,7 @@ navigator.mediaDevices.getUserMedia({audio: true}).then(mediaStream => {
             particles.push({
                 emissionFrame: frameCount,
                 heading: Math.random() * Math.PI * 2,
-                speed: Math.max(10, smoothVolume / 5)
+                speed: Math.max(6, smoothVolume / 10)
             });
         }
 
